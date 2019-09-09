@@ -1,3 +1,6 @@
-FROM node:10
+FROM node:alpine
 WORKDIR /app
-ADD run.js
+ADD package.json .
+RUN npm install --production
+ADD run.js .
+ENTRYPOINT ["docker-entrypoint.sh", "run.js"]
