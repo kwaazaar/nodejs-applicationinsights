@@ -1,0 +1,14 @@
+{
+  "name": "shellrunner",
+  "version": "1.0.0",
+  "description": "runs shell commands and logs results to ApplicationInsights",
+  "main": "run.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "applicationinsights": "^1.4.2"
+  }
+}
