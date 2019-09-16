@@ -2,7 +2,7 @@ const { spawn, exec } = require('child_process');
 const appInsights = require("applicationinsights");
 
 var args = process.argv.slice(2);
-if (args.length < 4) {
+if (args.length < 3) {
     console.error('syntax: node run.js instrumentation_key metric-key cmd [arg0..argn]');
     return 3;
 }
