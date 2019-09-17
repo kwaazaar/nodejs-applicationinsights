@@ -9,7 +9,13 @@ if (args.length < 3) {
 
 var instrumentationKey = args[0];
 var metricKey = args[1];
+
+// Concat all arguments together as one shell command
 var cmd = args.splice(2).join(' ');
+// If the command is wrapped in ", unwrap it
+if (cmd.startsWith('"') && cmd.endsWith('"')) {
+    cmd = cmd.substr(1, cmd.length - 2);
+}
 console.log(`Command: ${cmd}`);
 console.log(`Metric key: ${metricKey}`);
 console.log(`AI instrumentation key: ${instrumentationKey}`);
