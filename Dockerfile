@@ -1,5 +1,5 @@
 FROM node:buster-slim
-RUN apt-get update && apt-get install dnsutils -y
+RUN apt-get update && apt-get install dnsutils iputils-ping -y
 WORKDIR /app
 ADD package.json .
 RUN npm install --production
