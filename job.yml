@@ -2,6 +2,8 @@ apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
   name: network-check-googlecom
+  labels:
+    app: network-check
 spec:
   schedule: "0/1 * * * *"
   concurrencyPolicy: Forbid
@@ -11,7 +13,8 @@ spec:
         spec:
           containers:
           - name: docker
-            image: kwaazaar/bashrunner
+            image: kwaazaar/bashrunner:latest
+            imagePullPolicy: Always
             args: ["$(APPINSIGHTS_INSTRUMENTATIONKEY)","$(METRIC_KEY)", "$(COMMAND)"]
             env:
             - name: APPINSIGHTS_INSTRUMENTATIONKEY
@@ -19,5 +22,5 @@ spec:
             - name: METRIC_KEY
               value: googlecom
             - name: COMMAND
-              value: 'nslookup www.google.com'
+              value: "nslookup www.google.com && curl -v --silent -o /dev/nul https://www.google.com/"
           restartPolicy: Never # Next run will (may) fix it
