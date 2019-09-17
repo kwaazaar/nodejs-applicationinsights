@@ -1,4 +1,4 @@
-FROM node:alpine
+FROM node:buster-slim
 WORKDIR /app
 ADD package.json .
 RUN npm install --production
