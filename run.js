@@ -59,8 +59,8 @@ child.on('error', function (err) {
 //process.stdin.pipe(child.stdin);
 
 // Stream io
-child.stderr.on('data', (data) => logError(data));
-child.stdout.on('data', (data) => logMessage(data));
+child.stderr.on('data', (data) => logError(data.toString('utf8')));
+child.stdout.on('data', (data) => logMessage(data.toString('utf8')));
 
 function logMessage(msg) {
     console.log(msg);
