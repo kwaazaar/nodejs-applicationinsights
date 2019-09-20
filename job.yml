@@ -12,7 +12,7 @@ spec:
       template:
         spec:
           containers:
-          - name: docker
+          - name: bashrunner
             image: kwaazaar/bashrunner:latest
             imagePullPolicy: Always
             args: ["$(APPINSIGHTS_INSTRUMENTATIONKEY)","$(METRIC_KEY)", "$(COMMAND)"]
