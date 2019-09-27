@@ -9,6 +9,7 @@ spec:
   concurrencyPolicy: Forbid
   jobTemplate:
     spec:
+      activeDeadlineSeconds: 60 # must complete in x seconds
       template:
         spec:
           containers:
@@ -22,5 +23,5 @@ spec:
             - name: METRIC_KEY
               value: googlecom
             - name: COMMAND
-              value: "nslookup www.google.com && curl -v --silent -o /dev/nul https://www.google.com/"
+              value: "nslookup www.google.com && curl --connect-timeout 10 -v --silent -o /dev/nul https://www.google.com/"
           restartPolicy: Never # Next run will (may) fix it
