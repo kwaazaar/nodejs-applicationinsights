@@ -23,5 +23,5 @@ spec:
             - name: METRIC_KEY
               value: googlecom
             - name: COMMAND
-              value: "nslookup www.google.com && curl --connect-timeout 10 -v --silent -o /dev/nul https://www.google.com/"
+              value: "nslookup www.google.com && nc -vz -w 10 www.google.com 443 && curl --connect-timeout 10 -v --silent -o /dev/nul https://www.google.com/"
           restartPolicy: Never # Next run will (may) fix it
