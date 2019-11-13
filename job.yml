@@ -7,6 +7,7 @@ metadata:
 spec:
   schedule: "0/1 * * * *"
   concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 30 # must start in x seconds
   jobTemplate:
     spec:
       activeDeadlineSeconds: 60 # must complete in x seconds
