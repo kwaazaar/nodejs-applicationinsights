@@ -16,9 +16,23 @@ var cmd = args.splice(2).join(' ');
 if (cmd.startsWith('"') && cmd.endsWith('"')) {
     cmd = cmd.substr(1, cmd.length - 2);
 }
+
+let loop = false;
+let loopInterval = 5000;
+if (process.env.LOOP == "Y") {
+    loop = true;
+    const loopIntervalEnv = process.env.LOOPINTERVAL;
+    if (loopIntervalEnv != null && loopIntervalEnv != "") {
+        loopInterval = loopIntervalEnv;
+    }
+}
+
 console.log(`Command: ${cmd}`);
 console.log(`Metric key: ${metricKey}`);
 console.log(`AI instrumentation key: ${instrumentationKey}`);
+if (loop) {
+    console.log(`Looping is enabled (interval: ${loopInterval}ms)`);
+}
 
 appInsights.setup(instrumentationKey)
     .setAutoDependencyCorrelation(true)
@@ -32,13 +46,11 @@ appInsights.defaultClient.context.tags[appInsights.defaultClient.context.keys.cl
 appInsights.start();
 const aiClient = appInsights.defaultClient;
 
-const procStart = process.hrtime();
-const child = spawn(cmd, {
-//    stdio: 'inherit',
-    shell: true
-});
+let runCount = 0;
+let procStart = null;
+start();
 
-child.on('exit', function (code, signal) {
+function childExit(code, signal) {
     if (code !== 0) {
         logError(`Failure: ${code} (signal: ${signal})`);
         trackResult(false);
@@ -46,21 +58,49 @@ child.on('exit', function (code, signal) {
         logMessage(`Success!`);
         trackResult(true);
     }
-    return code;
-});
 
-child.on('error', function (err) {
+    restart(code);
+}
+
+function childError(err) {
     logError(err);
     trackResult(false);
-    return 1;
-});
+
+    restart(1);
+}
 
 // Pipe stdin, just in case
 //process.stdin.pipe(child.stdin);
 
-// Stream io
-child.stderr.on('data', (data) => logMessage(data.toString('utf8'))); // Log as message, error will be caught by on child.on('error')
-child.stdout.on('data', (data) => logMessage(data.toString('utf8')));
+function start() {
+    runCount++;
+    logMessage(`Starting run ${runCount}.`)
+    procStart = process.hrtime();
+    let child = spawn(cmd, {
+    //    stdio: 'inherit',
+        shell: true
+    });
+    child.on('exit', childExit);
+    child.on('error', childError);
+
+    // Stream io
+    child.stderr.on('data', (data) => logMessage(data.toString('utf8'))); // Log as message, error will be caught by on child.on('error')
+    child.stdout.on('data', (data) => logMessage(data.toString('utf8')));
+}
+
+async function restart(code) {
+    logMessage(`Run ${runCount} finished.`)
+    if (loop) {
+        await sleep(loopInterval);
+        start();
+    } else {
+        return code;
+    }
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 function logMessage(msg) {
     console.log(msg);
